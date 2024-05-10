@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Usuario } from 'app/models/Usuario';
 import { AuthService } from 'app/services/auth.service';
 import { UsuarioService } from 'app/services/usuario.service';
+import { ModalHabilitarMfaComponent } from './modal-habilitar-mfa/modal-habilitar-mfa.component';
+import { ModalDeshabilitarMfaComponent } from './modal-deshabilitar-mfa/modal-deshabilitar-mfa.component';
 
 @Component({
   selector: 'app-profile',
@@ -20,7 +23,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private usuarioService: UsuarioService, 
     private snackBar: MatSnackBar,
-    private authService : AuthService
+    private authService : AuthService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -72,6 +76,36 @@ export class ProfileComponent implements OnInit {
       }
     );
   }
+
+  habilitarDeshabilitarMFA(): void {
+    // Verificar si la autenticación de dos pasos está habilitada
+    if (this.datosPerfil.mfa_enabled) {
+      // Abrir modal de confirmación para deshabilitar la autenticación de dos pasos
+      const dialogRef = this.dialog.open(ModalDeshabilitarMfaComponent, {
+        width: '400px',
+        data: { mensaje: '¿Está seguro de que desea deshabilitar la autenticación de dos pasos?' }
+      });
+
+      // Suscribirse al resultado del modal
+      dialogRef.afterClosed().subscribe(() => {
+        // Actualizar datos del usuario
+        this.cargarData();
+      });
+  
+    } else {
+      // Abrir modal para habilitar la autenticación de dos pasos
+      const dialogRef = this.dialog.open(ModalHabilitarMfaComponent, {
+        width: '600px',
+      });
+  
+      // Suscribirse al resultado del modal
+      dialogRef.afterClosed().subscribe(() => {
+        // Actualizar datos del usuario
+        this.cargarData();
+      });
+    }
+  }
+  
 
   private mostrarNotificacion(mensaje: string, esError: boolean = false) {
     this.snackBar.open(mensaje, 'Cerrar', {

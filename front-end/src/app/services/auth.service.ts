@@ -18,6 +18,10 @@ export class AuthService {
     return this.http.post(`${this.URL}/api/login`, user);
   }
 
+  validarMFA(id: number, token: string): Observable<any>{
+    return this.http.post(`${this.URL}/api/validateOTP`, {id, token});
+  }
+
   isAuth(): boolean {
     const token = localStorage.getItem('token');
     if (this.jwtHelper.isTokenExpired(token) || !localStorage.getItem('token')) {

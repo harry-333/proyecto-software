@@ -1,25 +1,4 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 02-05-2024 a las 05:06:36
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Base de datos: `softwareteam`
---
 CREATE DATABASE IF NOT EXISTS `softwareteam` DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish2_ci;
 USE `softwareteam`;
 
@@ -27,6 +6,7 @@ DELIMITER $$
 --
 -- Procedimientos
 --
+DROP PROCEDURE IF EXISTS `buscar_palabra_clave_en_auditoria`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `buscar_palabra_clave_en_auditoria` (IN `palabra_clave` VARCHAR(255))   BEGIN
     SELECT * FROM auditoria WHERE 
     sql_ejecutado LIKE CONCAT('%', palabra_clave, '%') OR
@@ -34,6 +14,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `buscar_palabra_clave_en_auditoria` 
     valor_nuevo LIKE CONCAT('%', palabra_clave, '%');
 END$$
 
+DROP PROCEDURE IF EXISTS `obtener_registros_auditoria_por_fecha_usuario`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `obtener_registros_auditoria_por_fecha_usuario` (IN `fecha_busqueda` DATE, IN `usuario_id` INT)   BEGIN
     IF fecha_busqueda IS NOT NULL AND usuario_id IS NOT NULL THEN
         SELECT * FROM auditoria WHERE DATE(fecha_hora) = fecha_busqueda AND id_usuario = usuario_id;
@@ -46,6 +27,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `obtener_registros_auditoria_por_fec
     END IF;
 END$$
 
+DROP PROCEDURE IF EXISTS `obtener_todos_registros_auditoria`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `obtener_todos_registros_auditoria` ()   BEGIN
     SELECT * FROM auditoria;
 END$$
@@ -58,6 +40,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `agenda`
 --
 
+DROP TABLE IF EXISTS `agenda`;
 CREATE TABLE `agenda` (
   `id_agenda` int(11) NOT NULL COMMENT 'Identificador primario',
   `comentarios` text NOT NULL COMMENT 'Comentarios por parte del rol de Usuario',
@@ -70,6 +53,7 @@ CREATE TABLE `agenda` (
 --
 -- Disparadores `agenda`
 --
+DROP TRIGGER IF EXISTS `audit_actualizar_agenda`;
 DELIMITER $$
 CREATE TRIGGER `audit_actualizar_agenda` AFTER UPDATE ON `agenda` FOR EACH ROW BEGIN
     
@@ -114,6 +98,7 @@ CREATE TRIGGER `audit_actualizar_agenda` AFTER UPDATE ON `agenda` FOR EACH ROW B
 END
 $$
 DELIMITER ;
+DROP TRIGGER IF EXISTS `audit_crear_agenda`;
 DELIMITER $$
 CREATE TRIGGER `audit_crear_agenda` AFTER INSERT ON `agenda` FOR EACH ROW BEGIN
 
@@ -143,6 +128,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `auditoria`
 --
 
+DROP TABLE IF EXISTS `auditoria`;
 CREATE TABLE `auditoria` (
   `id` int(11) NOT NULL COMMENT 'Identificador primario',
   `id_usuario` int(11) NOT NULL COMMENT 'Identificador foraneo, asociado a la tabla Usuario',
@@ -180,7 +166,34 @@ INSERT INTO `auditoria` (`id`, `id_usuario`, `accion`, `fecha_hora`, `sql_ejecut
 (32, 13, 'CREATE', '2024-04-19 19:36:13', 'INSERT INTO tipo_propiedad (id_tipoProp, desc_tipoProp) VALUES (10, \'Bodega\')', NULL, 'Nuevo tipo de propiedad creado'),
 (33, 13, 'CREATE', '2024-04-19 19:36:13', 'INSERT INTO tipo_propiedad (id_tipoProp, desc_tipoProp) VALUES (11, \'Local\')', NULL, 'Nuevo tipo de propiedad creado'),
 (34, 13, 'CREATE', '2024-04-19 19:37:09', 'INSERT INTO tipo_propiedad (id_tipoProp, desc_tipoProp) VALUES (12, \'Deposito\')', NULL, 'Nuevo tipo de propiedad creado'),
-(35, 13, 'CREATE', '2024-04-19 19:37:09', 'INSERT INTO tipo_propiedad (id_tipoProp, desc_tipoProp) VALUES (13, \'Edificio\')', NULL, 'Nuevo tipo de propiedad creado');
+(35, 13, 'CREATE', '2024-04-19 19:37:09', 'INSERT INTO tipo_propiedad (id_tipoProp, desc_tipoProp) VALUES (13, \'Edificio\')', NULL, 'Nuevo tipo de propiedad creado'),
+(36, 13, 'UPDATE', '2024-05-08 13:55:08', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(37, 13, 'UPDATE', '2024-05-08 13:56:37', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(38, 13, 'UPDATE', '2024-05-08 13:58:06', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(39, 13, 'UPDATE', '2024-05-08 14:00:21', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(40, 13, 'UPDATE', '2024-05-08 14:00:37', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(41, 13, 'UPDATE', '2024-05-08 14:00:39', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(42, 13, 'UPDATE', '2024-05-08 14:00:41', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(43, 13, 'UPDATE', '2024-05-08 14:00:42', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(44, 13, 'UPDATE', '2024-05-08 14:00:44', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(45, 13, 'UPDATE', '2024-05-08 14:00:46', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(46, 13, 'UPDATE', '2024-05-08 14:02:05', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(47, 13, 'UPDATE', '2024-05-08 14:03:12', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(48, 13, 'UPDATE', '2024-05-08 14:04:32', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(49, 13, 'UPDATE', '2024-05-08 14:08:35', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(50, 13, 'UPDATE', '2024-05-08 14:18:26', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(51, 13, 'UPDATE', '2024-05-08 14:33:44', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(52, 13, 'UPDATE', '2024-05-08 14:51:30', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(53, 13, 'UPDATE', '2024-05-08 14:55:27', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(54, 13, 'UPDATE', '2024-05-08 14:55:42', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(55, 13, 'UPDATE', '2024-05-08 17:10:13', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(56, 13, 'UPDATE', '2024-05-08 17:10:28', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(57, 13, 'UPDATE', '2024-05-08 17:10:49', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(58, 13, 'UPDATE', '2024-05-08 20:48:52', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(59, 13, 'UPDATE', '2024-05-08 20:49:33', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(60, 13, 'UPDATE', '2024-05-08 20:49:51', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(61, 13, 'UPDATE', '2024-05-09 18:30:11', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1'),
+(62, 13, 'UPDATE', '2024-05-09 18:30:17', 'UPDATE usuario SET id = 13, id_rol = 1, nombre = \'Admin\', apellido = \'Admin\', correo = \'admin@softwareteam.com\', contrasena = \'$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli\', telefono = \'8901234567\', descripcion = \'Administrador del sistema\', documento = \'123456789\', tipo_documento = 1 WHERE id = 13', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1', 'id: 13, id_rol: 1, nombre: Admin, apellido: Admin, correo: admin@softwareteam.com, contrasena: $2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli, telefono: 8901234567, descripcion: Administrador del sistema, documento: 123456789, tipo_documento: 1');
 
 -- --------------------------------------------------------
 
@@ -188,6 +201,7 @@ INSERT INTO `auditoria` (`id`, `id_usuario`, `accion`, `fecha_hora`, `sql_ejecut
 -- Estructura de tabla para la tabla `propiedad`
 --
 
+DROP TABLE IF EXISTS `propiedad`;
 CREATE TABLE `propiedad` (
   `id_propiedad` int(11) NOT NULL COMMENT 'Identificador primario',
   `id_tipoNeg` int(11) NOT NULL COMMENT 'Identificador foraneo, campo asociado a la tabla tipo_negocio',
@@ -206,6 +220,7 @@ CREATE TABLE `propiedad` (
 --
 -- Disparadores `propiedad`
 --
+DROP TRIGGER IF EXISTS `audit_actualizar_propiedad`;
 DELIMITER $$
 CREATE TRIGGER `audit_actualizar_propiedad` AFTER UPDATE ON `propiedad` FOR EACH ROW BEGIN
     
@@ -269,6 +284,7 @@ CREATE TRIGGER `audit_actualizar_propiedad` AFTER UPDATE ON `propiedad` FOR EACH
 END
 $$
 DELIMITER ;
+DROP TRIGGER IF EXISTS `audit_crear_propiedad`;
 DELIMITER $$
 CREATE TRIGGER `audit_crear_propiedad` AFTER INSERT ON `propiedad` FOR EACH ROW BEGIN
 
@@ -304,6 +320,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `rol`
 --
 
+DROP TABLE IF EXISTS `rol`;
 CREATE TABLE `rol` (
   `id` int(11) NOT NULL COMMENT 'Identificador primario',
   `descripcion` varchar(50) DEFAULT NULL COMMENT 'Descripción de rol'
@@ -321,6 +338,7 @@ INSERT INTO `rol` (`id`, `descripcion`) VALUES
 --
 -- Disparadores `rol`
 --
+DROP TRIGGER IF EXISTS `audit_actualizar_rol`;
 DELIMITER $$
 CREATE TRIGGER `audit_actualizar_rol` AFTER UPDATE ON `rol` FOR EACH ROW BEGIN
     DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -354,6 +372,7 @@ CREATE TRIGGER `audit_actualizar_rol` AFTER UPDATE ON `rol` FOR EACH ROW BEGIN
 END
 $$
 DELIMITER ;
+DROP TRIGGER IF EXISTS `audit_crear_rol`;
 DELIMITER $$
 CREATE TRIGGER `audit_crear_rol` AFTER INSERT ON `rol` FOR EACH ROW BEGIN
   	DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -375,6 +394,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `tipo_documento`
 --
 
+DROP TABLE IF EXISTS `tipo_documento`;
 CREATE TABLE `tipo_documento` (
   `id` int(11) NOT NULL COMMENT 'Identificador primario',
   `descripcion` varchar(50) NOT NULL COMMENT 'Descripción de tipo de documento'
@@ -391,6 +411,7 @@ INSERT INTO `tipo_documento` (`id`, `descripcion`) VALUES
 --
 -- Disparadores `tipo_documento`
 --
+DROP TRIGGER IF EXISTS `audit_actualizar_tipoDocumento`;
 DELIMITER $$
 CREATE TRIGGER `audit_actualizar_tipoDocumento` AFTER UPDATE ON `tipo_documento` FOR EACH ROW BEGIN
     DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -424,6 +445,7 @@ CREATE TRIGGER `audit_actualizar_tipoDocumento` AFTER UPDATE ON `tipo_documento`
 END
 $$
 DELIMITER ;
+DROP TRIGGER IF EXISTS `audit_crear_tipoDocumento`;
 DELIMITER $$
 CREATE TRIGGER `audit_crear_tipoDocumento` AFTER INSERT ON `tipo_documento` FOR EACH ROW BEGIN
   	DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -445,6 +467,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `tipo_negocio`
 --
 
+DROP TABLE IF EXISTS `tipo_negocio`;
 CREATE TABLE `tipo_negocio` (
   `id_tipoNeg` int(11) NOT NULL COMMENT 'Identificador primario',
   `desc_Neg` varchar(20) NOT NULL COMMENT 'Descripción de tipo de negocio'
@@ -465,6 +488,7 @@ INSERT INTO `tipo_negocio` (`id_tipoNeg`, `desc_Neg`) VALUES
 --
 -- Disparadores `tipo_negocio`
 --
+DROP TRIGGER IF EXISTS `audit_actualizar_tipoNegocio`;
 DELIMITER $$
 CREATE TRIGGER `audit_actualizar_tipoNegocio` AFTER UPDATE ON `tipo_negocio` FOR EACH ROW BEGIN
     DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -498,6 +522,7 @@ CREATE TRIGGER `audit_actualizar_tipoNegocio` AFTER UPDATE ON `tipo_negocio` FOR
 END
 $$
 DELIMITER ;
+DROP TRIGGER IF EXISTS `audit_crear_tipoNegocio`;
 DELIMITER $$
 CREATE TRIGGER `audit_crear_tipoNegocio` AFTER INSERT ON `tipo_negocio` FOR EACH ROW BEGIN
   	DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -519,6 +544,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `tipo_propiedad`
 --
 
+DROP TABLE IF EXISTS `tipo_propiedad`;
 CREATE TABLE `tipo_propiedad` (
   `id_tipoProp` int(11) NOT NULL COMMENT 'Identificador primario',
   `desc_tipoProp` varchar(20) NOT NULL COMMENT 'Descripción de tipo de propiedad'
@@ -544,6 +570,7 @@ INSERT INTO `tipo_propiedad` (`id_tipoProp`, `desc_tipoProp`) VALUES
 --
 -- Disparadores `tipo_propiedad`
 --
+DROP TRIGGER IF EXISTS `audit_actualizar_tipoPropiedad`;
 DELIMITER $$
 CREATE TRIGGER `audit_actualizar_tipoPropiedad` AFTER UPDATE ON `tipo_propiedad` FOR EACH ROW BEGIN
     DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -577,6 +604,7 @@ CREATE TRIGGER `audit_actualizar_tipoPropiedad` AFTER UPDATE ON `tipo_propiedad`
 END
 $$
 DELIMITER ;
+DROP TRIGGER IF EXISTS `audit_crear_tipoPropiedad`;
 DELIMITER $$
 CREATE TRIGGER `audit_crear_tipoPropiedad` AFTER INSERT ON `tipo_propiedad` FOR EACH ROW BEGIN
   	DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -598,6 +626,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `usuario`
 --
 
+DROP TABLE IF EXISTS `usuario`;
 CREATE TABLE `usuario` (
   `id` int(11) NOT NULL COMMENT 'Identificador primario',
   `id_rol` int(11) NOT NULL COMMENT 'Identificador foraneo, campo asociado a la tabla rol',
@@ -608,20 +637,22 @@ CREATE TABLE `usuario` (
   `telefono` varchar(10) NOT NULL COMMENT 'Teléfono del usuario',
   `descripcion` varchar(50) DEFAULT NULL COMMENT 'Descripción opcional para el usuario ',
   `documento` varchar(10) NOT NULL COMMENT 'Número de documento ',
-  `tipo_documento` int(11) NOT NULL COMMENT 'Tipo de documento, campo asociado a la tabla tipo_documento'
+  `tipo_documento` int(11) NOT NULL COMMENT 'Tipo de documento, campo asociado a la tabla tipo_documento',
+  `mfa_secret` varchar(50) DEFAULT NULL,
+  `mfa_enabled` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`id`, `id_rol`, `nombre`, `apellido`, `correo`, `contrasena`, `telefono`, `descripcion`, `documento`, `tipo_documento`) VALUES
-(13, 1, 'Admin', 'Admin', 'admin@softwareteam.com', '$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli', '8901234567', 'Administrador del sistema', '123456789', 1),
-(19, 2, 'Juan', 'Pérez', 'usuario@example.com', '$2b$10$O.vJCV0BC4mniaDYK8muf.FiAngyLL01CQl0cpoXfpPu71Z92hET6', '3114567890', 'Descripción del usuario', '123456789', 1);
+INSERT INTO `usuario` (`id`, `id_rol`, `nombre`, `apellido`, `correo`, `contrasena`, `telefono`, `descripcion`, `documento`, `tipo_documento`, `mfa_secret`, `mfa_enabled`) VALUES
+(13, 1, 'Admin', 'Admin', 'admin@softwareteam.com', '$2b$10$ZOjUtltfoeHoja7.h1ldG.hGx821fuHOuNC/iLiacj4Kp6/CiCBli', '8901234567', 'Administrador del sistema', '123456789', 1, NULL, 0);
 
 --
 -- Disparadores `usuario`
 --
+DROP TRIGGER IF EXISTS `audit_actualizar_usuario`;
 DELIMITER $$
 CREATE TRIGGER `audit_actualizar_usuario` AFTER UPDATE ON `usuario` FOR EACH ROW BEGIN
     DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -679,6 +710,7 @@ CREATE TRIGGER `audit_actualizar_usuario` AFTER UPDATE ON `usuario` FOR EACH ROW
 END
 $$
 DELIMITER ;
+DROP TRIGGER IF EXISTS `audit_usuario`;
 DELIMITER $$
 CREATE TRIGGER `audit_usuario` AFTER INSERT ON `usuario` FOR EACH ROW BEGIN
     DECLARE admin_id INT DEFAULT 13; -- ID del administrador
@@ -776,7 +808,7 @@ ALTER TABLE `agenda`
 -- AUTO_INCREMENT de la tabla `auditoria`
 --
 ALTER TABLE `auditoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identificador primario', AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Identificador primario', AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT de la tabla `propiedad`

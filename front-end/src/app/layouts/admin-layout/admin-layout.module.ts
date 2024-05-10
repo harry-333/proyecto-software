@@ -14,6 +14,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NgxQRCodeModule } from 'ngx-qrcode2';
 
 import { ListarUsuarioComponent } from '../../pages/usuario/listar-usuario/listar-usuario.component';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
@@ -37,12 +38,15 @@ import { InformePropiedadComponent } from '../../pages/informes/informe-propieda
 import { UsuariosModalComponent } from '../../pages/agenda/editar-agenda/usuariosmodal/usuariosmodal.component';
 import { PropiedadesModalComponent } from '../../pages/agenda/editar-agenda/propiedadesmodal/propiedadesmodal.component';
 import { ProfileComponent } from 'app/pages/profile/profile.component';
+import { ModalHabilitarMfaComponent } from 'app/pages/profile/modal-habilitar-mfa/modal-habilitar-mfa.component';import { ModalDeshabilitarMfaComponent } from 'app/pages/profile/modal-deshabilitar-mfa/modal-deshabilitar-mfa.component';
+11
 
 
 
 @NgModule({
   imports: [
-    CommonModule,
+  
+  CommonModule,
     RouterModule.forChild(AdminLayoutRoutes),
     FormsModule,
     ReactiveFormsModule,
@@ -58,7 +62,8 @@ import { ProfileComponent } from 'app/pages/profile/profile.component';
     MatDialogModule,
     MatIconModule,
     MatTableModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    NgxQRCodeModule
   ],
   declarations: [
     DashboardComponent,
@@ -79,7 +84,9 @@ import { ProfileComponent } from 'app/pages/profile/profile.component';
     InformePropiedadComponent,
     UsuariosModalComponent,
     PropiedadesModalComponent,
-    ProfileComponent
+    ProfileComponent,
+    ModalHabilitarMfaComponent,
+    ModalDeshabilitarMfaComponent,
   ],
 
   /*

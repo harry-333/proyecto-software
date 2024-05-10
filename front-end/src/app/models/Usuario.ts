@@ -7,7 +7,8 @@ export class Usuario{
     telefono: string;
     descripcion: string;
     documento: string;
-    tipo_documento: string;
+    tipo_documento: number;
     id_rol: number;
-    Rol : string; 
+    Rol : string;
+    mfa_enabled: number; 
 }

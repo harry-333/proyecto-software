@@ -1,8 +1,10 @@
 import { Component, OnInit, ElementRef, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/services/auth.service';
 import { jwtDecode } from 'jwt-decode';
+import { ModalMfaVerificationComponent } from './modal-mfa-verification/modal-mfa-verification.component';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +27,7 @@ export class LoginComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,
+    public dialog: MatDialog
   ) {
     this.nativeElement = element.nativeElement;
     this.sidebarVisible = false;
@@ -64,30 +67,38 @@ export class LoginComponent implements OnInit {
     body.classList.remove('off-canvas-sidebar');
   }
 
-  login() {
-    
+  login() {  
     this.authService.singin(this.user).subscribe(
       (res: any) => {
         // Manejo del éxito
-        localStorage.setItem('token', res.token);
-  
         const decoded: any = jwtDecode(res.token);
         const role = decoded.role_id;
         
-        // Redirigir al diseño correspondiente según el rol
-        if (role === 1) {
-          this.router.navigate(['/home']);
-        } else if (role === 2 || role === 3) {
-          this.router.navigate(['/user/home']);
+        // Verificar si la autenticación de dos pasos está habilitada
+        if (res.mfa_enabled) {
+          // Mostrar modal para ingresar código de autenticación
+          const dialogRef = this.dialog.open(ModalMfaVerificationComponent, {
+            width: '400px',
+            data: { usuarioId: decoded.id }
+          });
+  
+          dialogRef.afterClosed().subscribe((result: boolean) => {
+            if (result) {
+              // Token válido, redireccionar al usuario a la página del sistema
+              localStorage.setItem('token', res.token);
+              this.redireccionarSegunRol(role);
+            } else {
+              // Cerrar sesión o realizar alguna otra acción
+            }
+          });
         } else {
-          // Redirigir a una página predeterminada en caso de otro rol desconocido
-          this.router.navigate(['/public/login']);
+          // No se requiere autenticación de dos pasos, asignar token y redireccionar
+          localStorage.setItem('token', res.token);
+          this.redireccionarSegunRol(role);
         }
       },
       (error) => {
         // Manejo de errores
-        //console.log(error);
-  
         if (error.status === 400) {
           // Mensaje personalizado para el error 400
           this.mostrarNotificacion('Error: Usuario o contraseña incorrectos', true);
@@ -99,7 +110,19 @@ export class LoginComponent implements OnInit {
     );
   }
   
-
+  redireccionarSegunRol(role: number): void {
+    // Redirigir al diseño correspondiente según el rol
+    if (role === 1) {
+      this.router.navigate(['/home']);
+    } else if (role === 2 || role === 3) {
+      this.router.navigate(['/user/home']);
+    } else {
+      // Redirigir a una página predeterminada en caso de otro rol desconocido
+      this.router.navigate(['/public/login']);
+    }
+  }
+  
+  
   private mostrarNotificacion(mensaje: string, esError: boolean = false) {
     this.snackBar.open(mensaje, 'Cerrar', {
       duration: 5000,

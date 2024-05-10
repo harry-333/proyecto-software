@@ -48,6 +48,7 @@ usuarioModel.getUsuario = function (id, callback) {
             + ", u.documento "
             + ", u.tipo_documento "
             + ", u.id_rol "
+            + ", u.mfa_enabled"
             + ", r.descripcion AS " + "Rol"
             + " FROM usuario u INNER JOIN rol r ON u.id_rol = r.id"
             + " WHERE u.id  = " + connection.escape(id) + ";";
@@ -153,12 +154,12 @@ usuarioModel.registrarUsuario = function (userData, callback) {
                 const hashedPassword = await bcrypt.hash(contrasena, 10); // 10 es el número de rondas de hashing
 
                 // Insertar el nuevo usuario en la base de datos
-                const insertUserQuery = `INSERT INTO usuario (id_rol, nombre, apellido, correo, contrasena, telefono, descripcion, documento, tipo_documento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-                connection.query(insertUserQuery, [3, nombre, apellido, correo, hashedPassword, telefono, descripcion, documento, tipo_documento], (error, result) => {
+                const insertUserQuery = `INSERT INTO usuario (id_rol, nombre, apellido, correo, contrasena, telefono, descripcion, documento, tipo_documento, mfa_enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                connection.query(insertUserQuery, [3, nombre, apellido, correo, hashedPassword, telefono, descripcion, documento, tipo_documento, 0], (error, result) => {
                     if (error) {
                         return callback(error);
                     }
-                    
+
                     return callback(null, { message: 'Usuario registrado exitosamente' });
                 });
             }
@@ -166,7 +167,7 @@ usuarioModel.registrarUsuario = function (userData, callback) {
     }
 };
 
-usuarioModel.verificarCorreo = async function(correo){
+usuarioModel.verificarCorreo = async function (correo) {
     return new Promise((resolve, reject) => {
         connection.query('SELECT * FROM usuario WHERE correo = ?', [correo], (error, results) => {
             if (error) {
@@ -181,7 +182,7 @@ usuarioModel.verificarCorreo = async function(correo){
     });
 };
 
-usuarioModel.actualizarContraseña = async function(email, hashedPassword){
+usuarioModel.actualizarContraseña = async function (email, hashedPassword) {
     return new Promise((resolve, reject) => {
         connection.query('UPDATE usuario SET contrasena = ? WHERE correo = ?', [hashedPassword, email], (error, result) => {
             if (error) {
@@ -193,5 +194,65 @@ usuarioModel.actualizarContraseña = async function(email, hashedPassword){
         });
     });
 }
+
+usuarioModel.guardarClaveSecreta = async function (usuarioId, secret, callback) {
+    if (connection) {
+        const sql = 'UPDATE usuario SET mfa_secret = ? WHERE id = ?';
+        
+        connection.query(sql, [secret, usuarioId], function (error, result) {
+            if (error) {
+                callback(error);
+            } else {
+                callback(null, result);
+            }
+        });
+    }
+};
+
+usuarioModel.obtenerClaveSecreta = async function (usuarioId, callback) {
+    if (connection) {
+        const sql = 'SELECT mfa_secret FROM usuario WHERE id = ?';
+        connection.query(sql, [usuarioId], function (error, result) {
+            if (error) {
+                callback(error);
+            } else {
+                // Obtener la clave secreta del primer resultado (si existe)
+                const base32_secret = result.length > 0 ? result[0].mfa_secret : null;
+                callback(null, base32_secret);
+            }
+        });
+    }
+};
+
+usuarioModel.actualizarMFA = async function (usuarioId, callback) {
+    if (connection) {
+        const sql = 'UPDATE usuario SET mfa_enabled = 1 WHERE id = ?';
+        connection.query(sql, [usuarioId], function (error, result) {
+            if (error) {
+                callback(error);
+            } else {
+                callback(null, result);
+            }
+        });
+    }
+};
+
+usuarioModel.deshabilitarMFA = async (id, callback) => {
+
+    if (connection) {
+        console.log(id);
+        // Realiza la consulta para actualizar el usuario y deshabilitar la autenticación de dos factores
+        const sql = 'UPDATE usuario SET mfa_enabled = 0 WHERE id = ?';
+        connection.query(sql, [id], (error, result) => {
+            if (error) {
+                
+                callback(error, null);
+            } else {
+                
+                callback(null, result);
+            }
+        });
+    }
+};
 
 module.exports = usuarioModel;

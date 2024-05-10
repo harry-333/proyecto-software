@@ -20,6 +20,8 @@ import { ChangePasswordComponent } from '../../pages/reset-password/change-passw
 import { HomePropiedadesComponent } from 'app/pages/propiedad/home-propiedades/home-propiedades.component';
 import { ConfirmacionComponent } from '../../pages/info/confirmacion/confirmacion.component';
 import { NotFoundComponent } from '../../pages/info/not-found/not-found.component';
+import { ModalMfaVerificationComponent } from 'app/pages/login/modal-mfa-verification/modal-mfa-verification.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import { NotFoundComponent } from '../../pages/info/not-found/not-found.componen
     ChangePasswordComponent,
     HomePropiedadesComponent,
     ConfirmacionComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ModalMfaVerificationComponent,
   ],
   imports: [
     CommonModule,
@@ -43,7 +46,8 @@ import { NotFoundComponent } from '../../pages/info/not-found/not-found.componen
     MatInputModule,
     MatButtonModule,
     DataTablesModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatDialogModule,
   ]
 })
 export class PublicLayoutModule { }

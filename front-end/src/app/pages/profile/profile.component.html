@@ -59,9 +59,8 @@
                       <label class="bmd-label-floating">Tipo de documento</label>
                       <mat-select id="tipo_documento" name="tipo_documento" [(ngModel)]="datosPerfil.tipo_documento"
                         required>
-                        <mat-option value="CC">CC</mat-option>
-                        <mat-option value="TI">TI</mat-option>
-                        <mat-option value="DNI">DNI</mat-option>
+                        <mat-option [value]="1">DNI</mat-option>
+                        <mat-option [value]="2">CC</mat-option>
                       </mat-select>
                     </mat-form-field>
                   </div>
@@ -125,10 +124,14 @@
           </div>
           <div class="card-body">
             <h6 class="card-category text-gray">{{ datosPerfil.Rol }}</h6>
-            <h4 class="card-title">{{ datosPerfil.nombre  }} {{ datosPerfil.apellido }}</h4>
+            <h4 class="card-title">{{ datosPerfil.nombre }} {{ datosPerfil.apellido }}</h4>
             <p class="card-description">
               ¡Hola! Soy un usuario increíble que ama usar esta aplicación.
             </p>
+            <!-- Botón para habilitar/deshabilitar la autenticación de 2 pasos -->
+            <button class="btn btn-primary" (click)="habilitarDeshabilitarMFA()">
+              {{ datosPerfil.mfa_enabled ? 'Deshabilitar' : 'Habilitar' }} Autenticación de 2 Pasos
+            </button>
           </div>
         </div>
       </div>

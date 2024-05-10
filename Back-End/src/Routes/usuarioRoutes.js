@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../Controllers/usuarioController');
+const mfaController = require('../Controllers/mfaController');
 
 /**
  * @swagger
@@ -112,5 +113,12 @@ router.post("/", usuarioController.insertarUsuario);
  *         description: Error del servidor.
  */
 router.put("/:id", usuarioController.actualizarUsuario);
+
+router.post("/2fa/:id", mfaController.habilitarMFA);
+
+router.post("/verifyOTP", mfaController.verificarMFA);
+
+router.post("/disabledOTP", mfaController.disabledOTP);
+
 
 module.exports = router;

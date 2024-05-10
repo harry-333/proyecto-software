@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Usuario } from 'app/models/Usuario';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +35,20 @@ export class UsuarioService {
   actualizarContrasena(usuario: Usuario) {
     const contrasena = { contrasena: usuario.contrasena };
     return this.http.post<string>(`${this.BASE_URL}/profile/password/${usuario.id}`, contrasena);
+  }
+
+  habilitarMFA(id: number): Observable<any> {
+    //console.log(id);
+    return this.http.post<any>(`${this.BASE_URL}/usuario/2fa/${id}`, {});
+  }
+
+  verificarMFA(id: number, token: string): Observable<any> {
+
+    return this.http.post<any>(`${this.BASE_URL}/usuario/verifyOTP`, { id, token });
+  }
+
+  deshabilitarMFA(id: number): Observable<any> {
+    //console.log(id);
+    return this.http.post<any>(`${this.BASE_URL}/usuario/disabledOTP`, { id });
   }
 }

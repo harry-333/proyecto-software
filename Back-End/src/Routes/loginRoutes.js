@@ -34,4 +34,6 @@ const loginController = require('../Controllers/loginController');
 
 router.post('/login', loginController.login);
 
+router.post('/validateOTP', loginController.validateOTP);
+
 module.exports = router;
